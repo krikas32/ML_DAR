@@ -60,6 +60,10 @@ fi
 # Vytvorenie priečinka pre modely
 mkdir -p models
 
+# Pridanie projektu do PYTHONPATH
+echo "Pridávam projekt do PYTHONPATH..."
+echo "export PYTHONPATH=\$PYTHONPATH:$(pwd)" >> venv/bin/activate
+
 echo "Inštalácia dokončená!"
 echo "Pre spustenie aplikácie:"
 echo "1. Upravte .env súbor a pridajte svoje API kľúče"

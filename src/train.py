@@ -3,9 +3,9 @@ import asyncio
 import numpy as np
 import tensorflow as tf
 from dotenv import load_dotenv
-from models.question_model import QuestionModel
-from services.openai_service import OpenAIService
-from data.questions import questions
+from src.models.question_model import QuestionModel
+from src.services.openai_service import OpenAIService
+from src.data.questions import questions
 
 async def generate_training_data(num_samples=1000):
     # Generujeme náhodné tréningové dáta

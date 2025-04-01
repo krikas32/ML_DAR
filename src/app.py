@@ -1,9 +1,9 @@
 import os
 import asyncio
 from dotenv import load_dotenv
-from models.question_model import QuestionModel
-from services.openai_service import OpenAIService
-from data.questions import questions, QuestionType
+from src.models.question_model import QuestionModel
+from src.services.openai_service import OpenAIService
+from src.data.questions import questions, QuestionType
 
 async def get_user_answer(question):
     print(f"\n{question['text']}")

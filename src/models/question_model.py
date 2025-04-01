@@ -2,8 +2,8 @@ import tensorflow as tf
 import numpy as np
 import os
 from pathlib import Path
-from ..data.questions import QuestionType
-from ..services.dropbox_service import DropboxService
+from src.data.questions import QuestionType
+from src.services.dropbox_service import DropboxService
 
 class QuestionModel:
     def __init__(self):
