@@ -7,60 +7,46 @@ class OpenAIService:
         load_dotenv()
         if not os.getenv('OPENAI_API_KEY'):
             raise ValueError('OPENAI_API_KEY nie je nastavený v .env súbore')
-        
         self.client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
 
-    async def validate_question_selection(self, selected_question, previous_answers):
+    def test_api_key(self):
         try:
-            # Najprv otestujeme API kľúč
-            await self.test_api_key()
-            
-            prompt = self.create_validation_prompt(selected_question, previous_answers)
-            
-            response = await self.client.chat.completions.create(
-                model="gpt-4",
-                messages=[
-                    {
-                        "role": "system",
-                        "content": "Si expert na výber otázok pre darčekový poradca. Tvoja úloha je validovať, či je vybraná otázka relevantná a užitočná pre získanie informácií o preferenciách pre darček."
-                    },
-                    {
-                        "role": "user",
-                        "content": prompt
-                    }
-                ],
-                temperature=0.7,
-                max_tokens=150
-            )
-
-            validation = response.choices[0].message.content
-            return self.parse_validation_response(validation)
-        except Exception as e:
-            print(f'Chyba pri validácii otázky s OpenAI: {str(e)}')
-            return False
-
-    async def test_api_key(self):
-        try:
-            await self.client.chat.completions.create(
-                model="gpt-4",
-                messages=[{"role": "user", "content": "Test"}],
-                max_tokens=5
+            self.client.chat.completions.create(
+                model="gpt-3.5-turbo",
+                messages=[{"role": "user", "content": "Test"}]
             )
             print('OpenAI API kľúč je platný')
             return True
         except Exception as e:
-            if hasattr(e, 'status_code') and e.status_code == 401:
-                raise ValueError('Neplatný OpenAI API kľúč')
-            raise
+            print(f'Chyba pri testovaní OpenAI API kľúča: {str(e)}')
+            return False
+
+    def validate_question_selection(self, selected_question, previous_answers):
+        try:
+            # Vytvoríme prompt pre validáciu
+            prompt = self.create_validation_prompt(selected_question, previous_answers)
+            
+            # Získame odpoveď od OpenAI
+            response = self.client.chat.completions.create(
+                model="gpt-3.5-turbo",
+                messages=[{"role": "user", "content": prompt}]
+            )
+            
+            # Spracujeme odpoveď
+            return self.parse_validation_response(response.choices[0].message.content)
+        except Exception as e:
+            print(f'Chyba pri validácii otázky: {str(e)}')
+            return False
 
     def create_validation_prompt(self, selected_question, previous_answers):
-        return f"""
-        Predchádzajúce odpovede: {previous_answers}
-        Vybraná otázka: {selected_question}
-        
-        Je táto otázka relevantná a užitočná pre získanie informácií o preferenciách pre darček?
-        Odpovedz len "ÁNO" alebo "NIE".
-        """
+        prompt = f"Validuj, či je nasledujúca otázka relevantná na základe predchádzajúcich odpovedí:\n\n"
+        prompt += f"Predchádzajúce odpovede:\n"
+        for i, answer in enumerate(previous_answers, 1):
+            prompt += f"{i}. {answer}\n"
+        prompt += f"\nVybraná otázka: {selected_question['text']}\n"
+        prompt += "\nOdpovedz len 'áno' alebo 'nie'."
+        return prompt
 
     def parse_validation_response(self, response):
-        return response.strip().upper() == 'ÁNO' 
+        response = response.lower().strip()
+        return response in ['áno', 'yes', 'true', '1'] 

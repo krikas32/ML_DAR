@@ -22,13 +22,14 @@ class QuestionModel:
         else:
             print('GPU nie je dostupná, používam CPU')
 
-        self.model = tf.keras.Sequential([
-            tf.keras.layers.Dense(64, activation='relu', input_shape=(150,)),
-            tf.keras.layers.Dropout(0.2),
-            tf.keras.layers.Dense(32, activation='relu'),
-            tf.keras.layers.Dropout(0.2),
-            tf.keras.layers.Dense(20, activation='softmax')
-        ])
+        inputs = tf.keras.Input(shape=(150,))
+        x = tf.keras.layers.Dense(64, activation='relu')(inputs)
+        x = tf.keras.layers.Dropout(0.2)(x)
+        x = tf.keras.layers.Dense(32, activation='relu')(x)
+        x = tf.keras.layers.Dropout(0.2)(x)
+        outputs = tf.keras.layers.Dense(20, activation='softmax')(x)
+
+        self.model = tf.keras.Model(inputs=inputs, outputs=outputs)
 
         self.model.compile(
             optimizer=tf.keras.optimizers.Adam(0.001),

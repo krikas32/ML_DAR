@@ -25,7 +25,7 @@ async def main():
     await model.load_model()
     
     # Testujeme OpenAI API
-    if not await openai_service.test_api_key():
+    if not openai_service.test_api_key():
         print('Chyba: OpenAI API kľúč nie je platný')
         return
     

@@ -50,7 +50,7 @@ async def main():
     await model.load_model()
     
     # Inicializujeme OpenAI službu
-    if not await openai_service.test_api_key():
+    if not openai_service.test_api_key():
         print('Chyba: OpenAI API kľúč nie je platný')
         return
     
@@ -75,7 +75,7 @@ async def main():
         available_questions = [q for q in available_questions if q['id'] != selected_question['id']]
         
         # Validujeme výber otázky pomocou OpenAI
-        is_valid = await openai_service.validate_question_selection(selected_question, previous_answers)
+        is_valid = openai_service.validate_question_selection(selected_question, previous_answers)
         if not is_valid:
             print("Táto otázka nie je relevantná, skúsim inú...")
             continue
