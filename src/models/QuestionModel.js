@@ -1,4 +1,4 @@
-const tf = require('@tensorflow/tfjs-node');
+const tf = require('@tensorflow/tfjs-node-gpu');
 const fs = require('fs');
 const path = require('path');
 const { questionTypes } = require('../data/questions');
@@ -15,6 +15,9 @@ class QuestionModel {
 
     async buildModel() {
         console.log('Vytváram nový model...');
+        const gpuInfo = await tf.getBackend();
+        console.log(`Používam backend: ${gpuInfo}`);
+
         this.model = tf.sequential({
             layers: [
                 tf.layers.dense({ inputShape: [150], units: 64, activation: 'relu' }),
