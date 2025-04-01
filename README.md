@@ -1,51 +1,65 @@
-# Gift Question AI Model
+# Systém odporúčania darčekov
 
-Tento projekt obsahuje ML model pre výber otázok pre darčekový poradca. Model sa učí s pomocou OpenAI API a je schopný vyberať relevantné otázky na základe predchádzajúcich odpovedí.
+Tento projekt implementuje systém odporúčania darčekov pomocou strojového učenia. Systém používa neurónovú sieť na výber najvhodnejších otázok pre používateľa a OpenAI API na validáciu výberu otázok.
+
+## Požiadavky
+
+- Python 3.8 alebo novší
+- CUDA Toolkit (pre GPU akceleráciu)
+- cuDNN (pre GPU akceleráciu)
 
 ## Inštalácia
 
-1. Nainštalujte Node.js (verzia 14 alebo vyššia)
-2. Klonujte tento repozitár
-3. Nainštalujte závislosti:
+1. Nainštalujte potrebné balíčky:
 ```bash
-npm install
+pip install -r requirements.txt
 ```
-4. Vytvorte súbor `.env` a pridajte do neho váš OpenAI API kľúč:
+
+2. Vytvorte súbor `.env` v koreňovom adresári projektu s nasledujúcimi premennými:
 ```
-OPENAI_API_KEY=your_api_key_here
+OPENAI_API_KEY=your_openai_api_key_here
+DROPBOX_ACCESS_TOKEN=your_dropbox_access_token_here
 MODEL_SAVE_PATH=./models
-API_ENDPOINT=http://localhost:3000/api/questions
 ```
 
 ## Použitie
 
 ### Trénovanie modelu
-
-Pre spustenie trénovania modelu:
 ```bash
-npm run train
+python src/train.py
 ```
 
-Model sa bude trénovať, kým nezíska 3 po sebe idúce úspešné relácie. Každá relácia obsahuje 20 otázok, ktoré sú validované pomocou OpenAI API.
-
-### Použitie natrenovaného modelu
-
-Po dokončení trénovania sa model uloží do priečinka `models`. Tento model môže byť použitý v produkčnom prostredí pre výber otázok.
+### Spustenie aplikácie
+```bash
+python src/app.py
+```
 
 ## Štruktúra projektu
 
-- `src/models/QuestionModel.js` - Implementácia ML modelu
-- `src/services/openaiService.js` - Služba pre komunikáciu s OpenAI API
-- `src/data/questions.js` - Definícia otázok a ich typov
-- `src/train.js` - Skript pre trénovanie modelu
+```
+src/
+├── data/
+│   └── questions.py
+├── models/
+│   └── question_model.py
+├── services/
+│   ├── dropbox_service.py
+│   └── openai_service.py
+├── app.py
+└── train.py
+```
 
-## Typy otázok
+## GPU podpora
 
-Model podporuje tri typy otázok:
-- Yes/No (áno/nie)
-- Multiple Choice (výber z možností)
-- Slider (posuvník s hodnotami)
+Pre využitie GPU akcelerácie je potrebné:
 
-## API
+1. Nainštalovať CUDA Toolkit z [NVIDIA stránky](https://developer.nvidia.com/cuda-downloads)
+2. Nainštalovať cuDNN z [NVIDIA stránky](https://developer.nvidia.com/cudnn)
+3. Nastaviť premenné prostredia:
+```bash
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda/lib64
+```
 
-Po dokončení trénovania model posiela odpovede cez API endpoint definovaný v `.env` súbore. 
+## Licencia
+
+MIT 
